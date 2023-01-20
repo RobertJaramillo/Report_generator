@@ -1,0 +1,20 @@
+from report_builder import ReportGenerator
+
+def main():
+    myReport = ReportGenerator(name="Yes.pdf")
+    myReport.create_cover_page()
+    myReport.create_section("Title")
+    myReport.add_vertical_bar_graph(title='test', label_vals=['Cat', 'Dog', 'Bird'],
+                                    data_vals=[0,1,2], height=3, width=2, x_label="Animal",
+                                    y_label="Quantity" )
+    myReport.add_horizontal_bar_graph(title='test2', label_vals=['Cat', 'Dog', 'Bird'],
+                                    data_vals=[0,1,2], height=1, width=3, x_label="Animal",
+                                    y_label="Quantity" )
+    
+    #myReport.add_image(path="./test.png")
+    myReport.generate_pdf()
+    return
+
+
+if __name__ == "__main__":
+    main()
