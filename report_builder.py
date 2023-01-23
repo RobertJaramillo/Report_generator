@@ -28,7 +28,11 @@ class ReportGenerator:
         plt.rc('figure', titlesize=16)
 
     def create_cover_page(self, text=None):
-        '''Creates a cover page of a report based on the given inputs'''
+        '''Creates a cover page of a report based on the given inputs
+    
+           Args: 
+           text - The text to be displayed  
+        '''
         if text is None: 
             return -1
 
@@ -39,14 +43,29 @@ class ReportGenerator:
         return 0
 
     def generate_pdf(self, name='output.pdf'):
+        '''Generates the PDF and saves it as the given name.
+           Note it will be saved in the same directory as 
+           being run. 
+    
+           Args: 
+           text - The text to be displayed  
+        '''
         self.pdf.output(name, 'F')
 
-    def create_section(self, title=None):
-        if title is None:
-            return -1
+        return 0
+
+    def create_section_heading(self, text=None):
+        '''Creates a section heading in the pdf. 
+    
+           Args: 
+           text - The text to be displayed  
+        '''
+        if text is None:
+           print("No text "
+           return -1
         
         self.pdf.add_page()
-        self.pdf.cell(210, 10, title, 0)
+        self.pdf.cell(210, 10, text, 0)
         self.pdf.ln()
         self.pdf.ln()
 
@@ -131,4 +150,55 @@ class ReportGenerator:
         plt.savefig(file_name)
         self.add_image(file_name)
         
+        return 0
+
+    def add_pie_chart(self, title=None, chart_labels=None, values=None, width=3, height=2, MyDpi=120):
+
+        if chart_labels is None:  
+           print("Labels, cannot be none and must be specified.")
+           return -1
+        if values is None:
+           print("Values, cannot be none and must be specified.")
+           return -1
+        if len(chart_labels) != len(values):
+           print("The number of labels must match the number of values entered. ")
+           return -1
+        if title is None:
+           print("A title needs to be provided")
+           return -1 
+
+        plt.figure(figsize=(width, height), dpi=MyDpi)
+        plt.title(title)
+        plt.pie(values, labels=chart_labels)
+        file_name = title+'.png'
+        plt.savefig(file_name)
+        self.add_image(file_name)
+
+        return 0
+    
+    def add_line_chart(self, title=None, xlabel='', ylabel='', label_vals=None, data_vals=None,
+                       width=3, height=2, MyDpi=120):
+
+        if title is None:
+           print("A title needs to be provided")
+           return -1
+        if label_vals is None:
+           print("A title needs to be provided")
+           return -1
+        if data_vals is None:
+           print("A title needs to be provided")
+           return -1
+        if len(label_vals) != len(data_vals):
+           print("The number of labels must match the number of values entered. ")
+           return -1
+
+        plt.figure(figsize=(width, height), dpi=MyDpi)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.plot(label_vals, data_vals)
+        file_name = title+'.png'
+        plt.savefig(file_name)
+        self.add_image(file_name)
+
         return 0
