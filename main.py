@@ -13,6 +13,7 @@ def main():
     
     myReport.add_pie_chart(title='test3', chart_labels=["CAT", "DOG", "BIRD", "PLANE"], values=[2,4,5,7])
     myReport.add_line_chart(title='test4', label_vals=["CAT", "DOG", "BIRD", "PLANE"], data_vals=[2,4,5,7])
+    myReport.add_histogram(title='test5', data=[2,2,3,7,4,4,5,7])
     #myReport.add_image(path="./test.png")
     myReport.generate_pdf()
     return

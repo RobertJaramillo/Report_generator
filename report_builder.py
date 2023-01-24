@@ -256,3 +256,37 @@ class ReportGenerator:
         self.add_image(file_name)
 
         return 0
+
+
+    def add_histogram(self, title=None, x_label='', y_label='', data=None,
+                       width=3, height=2, MyDpi=120):
+        '''Creates a line graph in the pdf. 
+    
+           Args: 
+           title - The title of the chart
+           label_vals - The values for the various labels of the graph
+           data_vals - The data being charted 
+           x_label - The charts x-label
+           y_label - The charts y-label
+           width - Width of the charts in inches 
+           Heigth - Heigth  of the charts in inches 
+           MyDpi - The DPI for the rendering of the chart  
+        '''
+
+        if title is None:
+           print("A title needs to be provided")
+           return -1
+        if data is None:
+           print("A title needs to be provided")
+           return -1
+
+        plt.figure(figsize=(width, height), dpi=MyDpi)
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title(title)
+        plt.hist(data)
+        file_name = title+'.png'
+        plt.savefig(file_name)
+        self.add_image(file_name)
+
+        return 0
