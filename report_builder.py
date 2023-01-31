@@ -63,7 +63,7 @@ class PDF(FPDF):
 
         if title is None: 
             return -1
-
+        self.set_top_margin(0)
         self.add_page()
         
         self.set_xy(80, 125)
@@ -78,7 +78,7 @@ class PDF(FPDF):
         ''' Creates the header for our report to include our company name and the logo
         '''
         self.set_font(family=self.font_family, style='B', size=self.title_font_size)
-        self.set_top_margin(0)
+        
 
         if self.header_text != "": 
             self.cell(0, 20, self.header_text)
