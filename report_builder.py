@@ -2,56 +2,61 @@ from fpdf import FPDF
 import matplotlib.pyplot as plt
 
 
-class ReportGenerator: 
-    
-    def __init__(self, name, default_font_type='Arial',  default_font_size=22): 
-        ''' Initialize the settings for the report  
-        
-            Args: 
-            name - The name of the report
-            default_font_type - The type of font to be used i.e. Arial, Times New Roman, etc
-            default_font_size -  The size of the font to use for the report 
+class PDF(FPDF):
 
-            return 
+    logo_path = ""
+    report_name = ""
+    header_text = ""
+
+    def set_logo_path(self, path=""):
+        '''Sets the path to the logo file 
+
+           -path - The path to the file being used for the logo
         '''
-        self.name = name
-        self.pdf =  FPDF(orientation='P', unit='in',  format='A4')
 
-        self.pdf.set_font(default_font_type, '', default_font_size)
-        # Set the default text font size
-        plt.rc('font', size=8)# Set the axes title font size
-        plt.rc('axes', titlesize=6)# Set the axes labels font size
-        plt.rc('axes', labelsize=6)# Set the font size for x tick labels
-        plt.rc('xtick', labelsize=6)# Set the font size for y tick labels
-        plt.rc('ytick', labelsize=6)# Set the legend font size
-        plt.rc('legend', fontsize=8)# Set the font size of the figure title
-        plt.rc('figure', titlesize=16)
+        self.logo_path = path
+        return 0
 
-    def create_cover_page(self, text=None):
+    def set_report_name(self, name=""):
+        '''Sets the default report name 
+           name - the name of the report to be generated 
+        '''
+        self.report_name =  name
+
+    def set_title(self, title=""):
+        '''Sets the title that will be used in the headers and footers
+           title -The title used in the footer
+        '''
+        self.header_text = title
+
+    def create_cover_page(self, title=None):
         '''Creates a cover page of a report based on the given inputs
     
            Args: 
            text - The text to be displayed  
-        '''
-        if text is None: 
+        '''        
+
+        if title is None: 
             return -1
 
-        self.pdf.add_page()
-        self.pdf.cell(210,10, 'Cover Page', 0)
-        self.pdf.ln()
-        self.pdf.ln()
+
+        self.add_page()
+        self.cell(80, 200)
+        self.cell(210,10, title.upper(), 0)
+        self.ln()
+        
         return 0
 
-    def generate_pdf(self, name='output.pdf'):
-        '''Generates the PDF and saves it as the given name.
-           Note it will be saved in the same directory as 
-           being run. 
-    
-           Args: 
-           text - The text to be displayed  
-        '''
-        self.pdf.output(name, 'F')
-
+    def header(self):
+        
+        if self.header_text != "": 
+            self.cell(0, 0, self.header_text)
+        if self.logo_path != "":
+            self.image(self.logo_path, 180 ,5, 30)
+        
+        self.ln()
+        self.ln()
+            
         return 0
 
     def create_section_heading(self, text=None):
@@ -64,11 +69,10 @@ class ReportGenerator:
            print("No text")
            return -1
         
-        self.pdf.add_page()
-        self.pdf.cell(210, 10, text, 0)
-        self.pdf.ln()
-        self.pdf.ln()
-
+        
+        self.cell(210, 10, text.upper(), 0)
+        self.ln()
+        
         return 0
 
     def create_paragraph(self, text=None):
@@ -80,11 +84,10 @@ class ReportGenerator:
         if text is None:
             return 0 
 
-        self.pdf.ln()
-        self.pdf.write(5, text, '')
-        self.pdf.ln()
-        self.pdf.ln()
-
+        self.ln()
+        self.write(5, text, '')
+        self.ln()
+        
         return 0
 
     def add_image(self, path=None):
@@ -97,8 +100,8 @@ class ReportGenerator:
             print("Please specify a valid path")
             return -1
         
-        self.pdf.ln()
-        self.pdf.image(name=path)
+        self.ln()
+        self.image(name=path)
         return 0
 
     def add_vertical_bar_graph(self, title=None, label_vals=None, data_vals=None, 
