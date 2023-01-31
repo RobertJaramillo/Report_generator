@@ -74,6 +74,13 @@ class PDF(FPDF):
         
         return 0
 
+    def classification_banner(self):
+        self.set_font(family=self.font_family, style='B', size=10)
+        self.set_text_color(r=255, g=194, b=0)
+        self.cell(59, 5, "TLP: AMBER",)
+        self.set_text_color(r=0, g=0, b=0)
+        self.cell(20, 5, "UNCLASSIFIED//FOR OFFICAL USE ONLY")
+
     def header(self):
         ''' Creates the header for our report to include our company name and the logo
         '''
@@ -85,9 +92,15 @@ class PDF(FPDF):
         if self.logo_path != "":
             self.image(self.logo_path, 161 ,0, 50, 15)
         self.line(10, 15, 210, 15) 
-        self.set_y(20)
+        self.set_y(15)
+        self.classification_banner()
+        self.set_y(25)
             
         return 0
+    
+    def footer(self): 
+        self.set_y(-10)
+        self.classification_banner()
 
     def create_section_heading(self, heading=None, line_height=5):
         '''Creates a section heading in the pdf. 
