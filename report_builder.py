@@ -8,6 +8,31 @@ class PDF(FPDF):
     report_name = ""
     header_text = ""
 
+    def __init__(self, report_name= "", logo_path="", title_font_size=14, paragraph_font_size=12, font_family='Arial'):
+        super().__init__()
+
+        if report_name == "":
+            print("You must specify a report name")
+        
+        else: 
+            self.report_name = report_name
+
+        self.title_font_size = title_font_size
+        self.paragraph_font_size = paragraph_font_size
+        self.font_family = font_family
+        self.logo_path = logo_path
+
+        plt.rc('font', size=8)# Set the axes title font size
+        plt.rc('axes', titlesize=6)# Set the axes labels font size
+        plt.rc('axes', labelsize=6)# Set the font size for x tick labels
+        plt.rc('xtick', labelsize=6)# Set the font size for y tick labels
+        plt.rc('ytick', labelsize=6)# Set the legend font size
+        plt.rc('legend', fontsize=8)# Set the font size of the figure legend
+        plt.rc('figure', titlesize=16)# Set the font size of the figure title
+
+
+        self.set_font(family=self.font_family)
+
     def set_logo_path(self, path=""):
         '''Sets the path to the logo file 
 
@@ -39,40 +64,48 @@ class PDF(FPDF):
         if title is None: 
             return -1
 
-
         self.add_page()
-        self.cell(80, 200)
+        
+        self.set_xy(80, 125)
+        self.set_font(family=self.font_family, style='B')
         self.cell(210,10, title.upper(), 0)
-        self.ln()
+        self.set_font(family=self.font_family, style='')
+        self.add_page()
         
         return 0
 
     def header(self):
-        
+        ''' Creates the header for our report to include our company name and the logo
+        '''
+        self.set_font(family=self.font_family, style='B', size=self.title_font_size)
+        self.set_top_margin(0)
+
         if self.header_text != "": 
-            self.cell(0, 0, self.header_text)
+            self.cell(0, 20, self.header_text)
         if self.logo_path != "":
-            self.image(self.logo_path, 180 ,5, 30)
-        
-        self.ln()
-        self.ln()
+            self.image(self.logo_path, 161 ,0, 50, 15)
+        self.line(10, 15, 210, 15) 
+        self.set_y(20)
             
         return 0
 
-    def create_section_heading(self, text=None):
+    def create_section_heading(self, heading=None, line_height=5):
         '''Creates a section heading in the pdf. 
     
            Args: 
            text - The text to be displayed  
+           heading - The heading we are giving our section 
+           line_height - The hieght of the text line we are going to be writing
         '''
-        if text is None:
-           print("No text")
+        if heading is None:
+           print("No heading provided")
            return -1
         
-        
-        self.cell(210, 10, text.upper(), 0)
+        self.set_font(family=self.font_family, style='BU')       
+        self.write(line_height, heading.upper())
         self.ln()
-        
+        self.set_font(family=self.font_family, style='')       
+
         return 0
 
     def create_paragraph(self, text=None):
@@ -83,10 +116,10 @@ class PDF(FPDF):
         '''
         if text is None:
             return 0 
-
+        
         self.ln()
-        self.write(5, text, '')
-        self.ln()
+        self.set_font(family=self.font_family, style='')    
+        self.write(5, text)
         
         return 0
 
@@ -260,7 +293,6 @@ class PDF(FPDF):
 
         return 0
 
-
     def add_histogram(self, title=None, x_label='', y_label='', data=None,
                        width=3, height=2, MyDpi=120):
         '''Creates a line graph in the pdf. 
@@ -291,5 +323,56 @@ class PDF(FPDF):
         file_name = title+'.png'
         plt.savefig(file_name)
         self.add_image(file_name)
+
+        return 0
+
+    def create_table(self, data=None, col_names=None, data_font_size=8, column_font_size=14):
+        '''Creates a table with rows consisting of the data passed in and column names consisting 
+           of information in col_names. The assumptiopn is data is given as an array of rows 
+           with each row containing the data for each column.
+
+           data - The data we want placed in our rows 
+           col_names - The names of the columns in our table    
+        '''
+
+        if data is None or len(data) == 0: 
+            print("Create table received no data")
+            return -1 
+        if col_names is None or len(col_names) == 0: 
+            print("Create table received no data")
+            return -1 
+
+        self.ln()
+        self.ln()
+
+        # Get the width of the pdf so we can appropriately divide our tabels cells
+        effective_page_width = self.w - 2*self.l_margin
+
+        # Get the width for each individual column
+        col_width =  effective_page_width/len(col_names)
+
+        #Set the text height to the same size as the current font size
+        text_height = self.font_size_pt
+
+        self.set_text_color(r=255, g=255, b=255)
+        self.set_fill_color(r=30,g=60,b=84)
+        self.set_font(size=column_font_size, family=self.font_family, style='')
+        for col in col_names:
+            self.cell(col_width, text_height,  str(col), border=1, align='C', fill=True)
+        
+        self.set_text_color(r=0, g=0, b=0)
+        self.set_fill_color(r=188,g=227,b=222)
+        self.set_font(size=data_font_size, family=self.font_family, style='')
+        index = 0
+        for row in data:
+            self.ln()
+            
+            for item in row:
+               if (index%2) == 0: 
+                   self.cell(col_width, text_height,  str(item), border=1, align='C', fill=True)
+               else:
+                   self.cell(col_width, text_height,  str(item), border=1, align='C', fill=False)
+            index += 1
+               
 
         return 0
